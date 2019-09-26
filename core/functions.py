@@ -1,16 +1,12 @@
-def fahrenheit(T_in_celsius):
-    return (T_in_celsius * 9 / 5) + 32 #return the temp in Fahrenheit based on Celsius
+import kivy 
 
-for t in (20,24,25.5):
-    print(t, ": ", fahrenheit(t))
+from kivy.app import App
+from kivy.uix.label import Label
 
-def begrueßen(name="Du da"):
-    """ Begrüßt eine Person. """
-    print("Hallo " + name + "!")
 
-# calls begrueßen Funktion
+class MyApp(App):
 
-begrueßen("Mikko")
-begrueßen()
+    def build(self):
+        return Label(text="Hallo Welt")
 
-print("Docstring der Funktion begrueßen() ist: " + begrueßen.__doc__)
+MyApp().run()
