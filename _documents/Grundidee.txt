@@ -1,0 +1,11 @@
+Eine Core-Engine mit GUI, die im Stande ist ganz viele Module zu verwalten.
+
+Der Hauptfokus liegt auf der Erstellung der Module im Programmierkenntnisse zu erlangen 
+und sinnvolle Tools für den Alltag zu erstellen.
+
+Zu beachten ist, dass ich (Mikko)vorerst die meißten Dinge in Python programmieren werde, 
+da ich einfach diese Sprache lernen möchte. Schnittstellen um bspw. JS oder C/C++ einzubauen 
+sind definitiv gegeben und auch leicht zu finden, somit sollte die Sprache keine Hürde sein.
+
+Da ohnehin alles auf Modulen / Microservices beruhen soll, sollte prinzipiell jede Sprache 
+implementiert werden können.

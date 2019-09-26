@@ -1,0 +1,7 @@
+Zur Kompilierung des Python Codes kann das komplette "Python-Paket" hier gedownloadet werden:
+	
+	https://www.python.org/downloads/windows/
+
+Gute Python Tutorials und gewisse Libs
+
+	https://www.python-course.eu/python3_course.php

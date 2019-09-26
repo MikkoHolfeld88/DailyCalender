@@ -1,0 +1,13 @@
+- MindMap (Bubbles / Lines) 
+	- individuelle Inhalte bei Click 
+	- automatische Verbindungen 
+	- modulare grafische Anpassung (sodass für Bubblegröße, Linedicke versch. Werte 
+					eingesetzt werden können)
+- Kalender 
+	- eigene KalenderApp
+	- warum? Schnittstelln durch eigene Programmierung größer
+- Zeitmesser
+	- wie der bei WT, MindMaps und Kalender integrierbar 
+- ToDo 
+	- eine ToDo-Liste die man aus Informationen aus MindMap zugreifen und 
+		mit Terminen im Kalender abgleichen kann

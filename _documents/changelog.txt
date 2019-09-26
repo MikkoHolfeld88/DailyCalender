@@ -1,0 +1,4 @@
+=========== 26.Sep 2019 ===========
+- Anlegen des Repositories
+- hinzugefügt Grundidee / Modulprojekte Mikko
+Autor: Mikko
