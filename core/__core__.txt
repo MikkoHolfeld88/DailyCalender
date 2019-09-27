@@ -1,0 +1,7 @@
+Die Core ist das Ursprungsfenster, dass man sieht.
+Je nach Gerät muss es unterschiedlich dargestellt werden.
+
+Es besteht aus einer Basisinfo.
+Modulauswahl. 
+Suchfenster.
+Datenanzeige fenster.
