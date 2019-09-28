@@ -1,0 +1,21 @@
+ScreenManagement:
+	transition: FadeTransition
+	MainScreen:
+	AnotherScreen:
+
+<MainScreen>:
+	name: "main"
+
+	Button:
+		on_release: app.root.current = "other"
+		text: "Another Screen"
+		font_size: 50
+
+<AnotherScreen>:
+	name: "other"
+
+	Button:
+		on_release: app.root.current = "main"
+		text: "Back to HomeScreen"
+		font_size: 50
+
