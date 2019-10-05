@@ -1,7 +1,10 @@
-import os
-import wx
-import time
-import spracheingabe
+import os               # FileDialog
+import wx               # GUI
+import time             # for creating TimeStamp / Showing Date
+import pygame
+from playsound import playsound
+import spracheingabe    # Speech to Text
+from gtts import gTTS   # Text to Speech
 
 class Example(wx.Frame):
 
@@ -11,6 +14,8 @@ class Example(wx.Frame):
         self.InitUI()
         self.SetSize(840,580)
         self.Centre()
+        pygame.mixer.init()
+        pygame.init()
 
     def InitUI(self):
 
@@ -29,11 +34,6 @@ class Example(wx.Frame):
         self.button_mic = wx.Button(self,wx.ID_ANY,size=(img_mic.GetWidth()+10, img_mic.GetHeight()+10))
         self.button_mic.SetBitmap(img_mic)
         self.button_mic.Bind(wx.EVT_BUTTON, self.OnClickedMic)
-
-        img_cam = wx.Bitmap("icon/cam.png", wx.BITMAP_TYPE_PNG)
-        self.button_cam = wx.Button(self,wx.ID_ANY,size=(img_cam.GetWidth()+10, img_cam.GetHeight()+10))
-        self.button_cam.SetBitmap(img_cam)
-        self.button_cam.Bind(wx.EVT_BUTTON, self.OnClickedCam)
 
         img_play = wx.Bitmap("icon/play.png", wx.BITMAP_TYPE_PNG)
         self.button_play = wx.Button(self,wx.ID_ANY,size=(img_play.GetWidth()+10, img_play.GetHeight()+10))
@@ -70,7 +70,7 @@ class Example(wx.Frame):
         self.texteingabe = wx.TextCtrl(self,-1, "Gedanken eingeben...", style = wx.TE_MULTILINE)
         self.texteingabe.SetFont(font_texteingabe)
 
-        # Tips zur ANordnung in BoxSizers
+        # Tips zur Anordnung in BoxSizers
           # topsizer.Add(
           #       wx.TextCtrl(self, -1, "My text.", wx.DefaultPosition, wx.Size(100,60), wx.TE_MULTILINE),
           #       1,           # make vertically stretchable
@@ -80,7 +80,6 @@ class Example(wx.Frame):
 
         # ICON MENÜ wird der Hbox_Menu angeordnet
         hbox_menu.Add(self.button_mic, wx.ID_ANY, wx.CENTER | wx.ALL,5 )
-        hbox_menu.Add(self.button_cam, wx.ID_ANY, wx.CENTER | wx.ALL,5  )
         hbox_menu.Add(self.button_play, wx.ID_ANY, wx.CENTER | wx.ALL,5  )
         hbox_menu.Add(self.button_save, wx.ID_ANY, wx.CENTER | wx.ALL,5  )
         hbox_menu.Add(self.button_load, wx.ID_ANY, wx.CENTER | wx.ALL,5  )
@@ -88,11 +87,10 @@ class Example(wx.Frame):
 
         # Hauptfenster Eingabe anordnen
         vbox_eingabe.Add(self.datum,2,wx.EXPAND | wx.ALL, 20)           #  Add(window, proportion=0, flag=0, border=0, userData=None)
-        # vbox_eingabe.Add(self.title,2,wx.EXPAND | wx.ALL, 20)
         vbox_eingabe.Add(self.title_eingabe,2,wx.EXPAND | wx.ALL, 20)
         vbox_eingabe.Add(self.texteingabe,10,wx.EXPAND | wx.ALL, 20)
 
-        # Vbox Colum-Ordnung wird angeordnet
+        # Vbox Column-Ordnung wird angeordnet
         vbox.Add(hbox_menu,1, wx.EXPAND | wx.ALL)
         vbox.Add(vbox_eingabe,6, wx.EXPAND | wx.ALL)
         vbox.AddSpacer(20)
@@ -100,22 +98,58 @@ class Example(wx.Frame):
         self.SetSizer(vbox)
 
     def OnClickedMic(self, event):
+        # changing bitmap
         self.button_mic.SetBitmap(wx.Bitmap("icon/rec.png", wx.BITMAP_TYPE_PNG))
         self.Update()
         print("Mic gedrückt")
         text = spracheingabe.OnSpeak()
+        # überschreibt Gedanken eingeben... oder hängt etwas dran falls nicht Gedanken eingeben...
         if self.texteingabe.GetValue() == "Gedanken eingeben...":
             self.texteingabe.SetValue(text)
         else:
             self.texteingabe.AppendText(" " + text)
+        # changing bitmap
         self.button_mic.SetBitmap(wx.Bitmap("icon/mic.png", wx.BITMAP_TYPE_PNG))
         self.Update()
 
-    def OnClickedCam(self, event):
-        print("Cam gedrückt")
-
     def OnClickedPlay(self, event):
+        # changing bitmap
         print("Play gedrückt")
+        self.button_play.SetBitmap(wx.Bitmap("icon/playdisabled.png", wx.BITMAP_TYPE_PNG))
+        self.Update()
+        # handling audiofile
+        dateiname = self.createAudiofile(gTTS(text=self.texteingabe.GetValue(), lang="de", slow=False))
+        self.playingAudiofile(dateiname)
+        # handling stop / play
+        self.button_play.Bind(wx.EVT_BUTTON, self.OnClickedPause)
+        SONG_END = pygame.USEREVENT + 1
+        pygame.mixer.music.set_endevent(SONG_END)
+        # Procedure for SongEnd
+        while True:
+            for event in pygame.event.get():
+                if event.type == SONG_END:
+                    print("Audio Wiedergabe beendet")
+                    self.PlayButtonBackToNormal()
+
+    def PlayButtonBackToNormal(self):
+        self.button_play.SetBitmap(wx.Bitmap("icon/play.png", wx.BITMAP_TYPE_PNG))
+        self.button_play.Bind(wx.EVT_BUTTON, self.OnClickedPlay)
+        self.Update()
+
+    def OnClickedPause(self,event):
+        pygame.mixer.music.stop()
+        print("Audiowiedergabe unterbrochen")
+        self.PlayButtonBackToNormal()
+
+    def CheckingFile(self, filename):
+        dateiListe = []
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        for root, dirs, files in os.walk(dir_path):
+            for file in files:
+                if file.endswith('.mp3'):
+                    dateiListe.append(file)
+        if filename in dateiListe :
+            return True
 
     def OnClickedSave(self, event):
         print("Speichern gedrückt")
@@ -125,24 +159,19 @@ class Example(wx.Frame):
         else:
             speichername = str(self.title_eingabe.GetValue()) + "_" + zeitstempel + ".txt"
         speicherort = "data/" + speichername
-
         fh = open(speicherort, "w")
         print(self.texteingabe.GetValue(), file = fh)
         fh.close()
 
     def OnClickedLoad(self, event):
         print("Laden gedrückt")
-
         wildcard = "TXT files (*.txt)|*.txt"
         dialog = wx.FileDialog(self, "Open Text Files", wildcard=wildcard,
                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-
         if dialog.ShowModal() == wx.ID_CANCEL:
             return
-
         path = dialog.GetPath()
         dateiname = dialog.GetFilename()
-
         if os.path.exists(path):
             with open(path) as fobj:
                 for line in fobj:
@@ -152,10 +181,18 @@ class Example(wx.Frame):
     def OnClickedMenu(self, event):
         print("Menu gedrückt")
 
+    # Zusatzmethoden zum Button "Play"
+    def createAudiofile(self, textToSpeech):
+        zeitstempel = (time.strftime("%d%m%Y_%H%M%S"))
+        dateiname = "audio/morning_thoughts_tts_" + zeitstempel + "_.mp3"
+        textToSpeech.save(dateiname)
+        return dateiname
 
+    def playingAudiofile(self, datei):
+        pygame.mixer.music.load(datei)
+        pygame.mixer.music.play()
 
 def main():
-
     app = wx.App()
     ex = Example(None, title='Morning_Thoughts')
     ex.Show()

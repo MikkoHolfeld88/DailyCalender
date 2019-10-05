@@ -1,4 +1,0 @@
-Hier werden die .kv - Files der Python Dateien gespeichert.
-Man kann es sich so vorstellen, dass die .kv Files vergleichbar sind 
-wie die CSS Files bei einem HTML/JS Dokument. Sie grenzen den Programmcode 
-von der GUI ab.
