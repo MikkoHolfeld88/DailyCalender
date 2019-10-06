@@ -1,20 +1,20 @@
 import os               # FileDialog
+import shutil           # Deleting folder
 import wx               # GUI
 import time             # for creating TimeStamp / Showing Date
-import pygame
-from playsound import playsound
+import pygame           # playing audio
 import spracheingabe    # Speech to Text
 from gtts import gTTS   # Text to Speech
 
-class Example(wx.Frame):
+class App(wx.Frame):
 
     def __init__(self, parent, title):
-        super(Example, self).__init__(parent, title=title)
+        super(App, self).__init__(parent, title=title)
 
         self.InitUI()
+        self.deletingOldAudioFiles()
         self.SetSize(840,580)
         self.Centre()
-        pygame.mixer.init()
         pygame.init()
 
     def InitUI(self):
@@ -54,6 +54,9 @@ class Example(wx.Frame):
         self.button_menu = wx.BitmapButton(self,wx.ID_ANY,size=(img_menu.GetWidth()+10, img_menu.GetHeight()+10))
         self.button_menu.SetBitmap(img_menu)
         self.button_menu.Bind(wx.EVT_BUTTON, self.OnClickedMenu)
+
+        # Binds Close Event to OnClose Function
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         #Schrift-Deisgn
         font_datum = wx.Font(16, wx.DECORATIVE, wx.NORMAL, wx.NORMAL, faceName="Helvetica") #wx.Font(pointSize, family, style, weight, underline=False, faceName="", encoding=wx.FONTENCODING_DEFAULT
@@ -125,11 +128,26 @@ class Example(wx.Frame):
         SONG_END = pygame.USEREVENT + 1
         pygame.mixer.music.set_endevent(SONG_END)
         # Procedure for SongEnd
-        while True:
+        whileVar = True
+        while whileVar:
             for event in pygame.event.get():
                 if event.type == SONG_END:
                     print("Audio Wiedergabe beendet")
                     self.PlayButtonBackToNormal()
+                    whileVar = False
+
+    # Zusatzmethoden zum Button "Play"
+    def createAudiofile(self, textToSpeech):
+        zeitstempel = (time.strftime("%d%m%Y_%H%M%S"))
+        dateiname = "audio/morning_thoughts_tts_" + zeitstempel + "_.mp3"
+        textToSpeech.save(dateiname)
+        return dateiname
+
+    def playingAudiofile(self, datei):
+        pygame.mixer.quit()
+        pygame.mixer.init(frequency=50000)
+        pygame.mixer.music.load(datei)
+        pygame.mixer.music.play()
 
     def PlayButtonBackToNormal(self):
         self.button_play.SetBitmap(wx.Bitmap("icon/play.png", wx.BITMAP_TYPE_PNG))
@@ -151,6 +169,7 @@ class Example(wx.Frame):
         if filename in dateiListe :
             return True
 
+    # Button Save / Speichern
     def OnClickedSave(self, event):
         print("Speichern gedrückt")
         zeitstempel = (time.strftime("%d%m%Y_%H%M%S"))
@@ -181,20 +200,22 @@ class Example(wx.Frame):
     def OnClickedMenu(self, event):
         print("Menu gedrückt")
 
-    # Zusatzmethoden zum Button "Play"
-    def createAudiofile(self, textToSpeech):
-        zeitstempel = (time.strftime("%d%m%Y_%H%M%S"))
-        dateiname = "audio/morning_thoughts_tts_" + zeitstempel + "_.mp3"
-        textToSpeech.save(dateiname)
-        return dateiname
+    def OnClose(self, event):
+        print("close")
+        self.Destroy()
 
-    def playingAudiofile(self, datei):
-        pygame.mixer.music.load(datei)
-        pygame.mixer.music.play()
+    def deletingOldAudioFiles(self):
+        # löschen der erstellten Audiofiles von TTS
+        dateiListe = []
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        for root, dirs, files in os.walk(dir_path):
+            for file in files:
+                if file.endswith('.mp3'):
+                    os.remove("audio/" + file)
 
 def main():
     app = wx.App()
-    ex = Example(None, title='Morning_Thoughts')
+    ex = App(None, title='Morning_Thoughts')
     ex.Show()
     app.MainLoop()
 

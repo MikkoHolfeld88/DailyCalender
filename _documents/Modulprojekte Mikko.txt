@@ -11,3 +11,7 @@
 - ToDo 
 	- eine ToDo-Liste die man aus Informationen aus MindMap zugreifen und 
 		mit Terminen im Kalender abgleichen kann
+- Morning Thoughts
+	- aufnehmen / eingeben von Gedanken 
+	- abspeichern mit Datum
+	- Abspielen durch TTS 

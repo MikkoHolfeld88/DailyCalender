@@ -1,3 +1,6 @@
+=========== 06.Okt 2019 ===========
+- Modul Morning Thoughts mit STT und TTS Basisfunktionen fertiggestellt
+
 =========== 26.Sep 2019 ===========
 - Anlegen des Repositories
 - hinzugefügt Grundidee / Modulprojekte Mikko
