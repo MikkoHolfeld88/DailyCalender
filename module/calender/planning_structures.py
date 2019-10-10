@@ -49,7 +49,7 @@ class ToDo():
 #   But Due to different display I seperated them from Todos and added other typical attributes.
 #   Inheriting might be another solution but its just easier to keep it seperated in my opinion.
 #   time is obviously the time of the appointment and name the name
-#   place is a string for now on but can
+#   place is a string for now on but will have a second attribute with coordinates
 
 class Appointment():
 
